@@ -1,33 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const today = new Date().toISOString().split('T')[0]
+  const [pushups, setPushups] = useState(0)
+  const [situps, setSitups] = useState(0)
+  const [kilometers, setKilometers] = useState(0)
+
+  useEffect(() => {
+    const savedData = localStorage.getItem(today)
+    console.log(today)
+    console.log(savedData)
+    if (savedData) {
+      const { pushups: p, situps: s, kilometers: k } = JSON.parse(savedData)
+      setPushups(p)
+      setSitups(s)
+      setKilometers(k)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (pushups || situps || kilometers) {
+      localStorage.setItem(today, JSON.stringify({ pushups, situps, kilometers }))
+    }
+  }, [pushups, situps, kilometers])
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <header className='w-full p-4 bg-yellow-400 text-red-600 font-stretch-ultra-condensed'>
+      <img src="/logo.svg" alt="ONE PUNCH-MAN" className='h-10 text-red-600' />
+    </header>
+    <main className="container flex flex-col py-10 gap-10">
+      <div className="flex gap-4 justify-center">
+        <div className='flex flex-col gap-2'>
+          <button onClick={() => setPushups(pushups + 10)}>{pushups} Pushups</button>
+          <button onClick={() => setPushups(0)}>reset</button>
+        </div>
+        <div className='flex flex-col gap-2'>
+          <button onClick={() => setSitups(situps + 10)}>{situps} Situps</button>
+          <button onClick={() => setSitups(0)}>reset</button>
+        </div>
+        <div className='flex flex-col gap-2'>
+          <button onClick={() => setKilometers(kilometers + 1)}>{kilometers} Kilometers</button>
+          <button onClick={() => setKilometers(0)}>reset</button>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    </main>
     </>
   )
 }
